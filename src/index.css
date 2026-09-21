@@ -1,0 +1,161 @@
+@import "tailwindcss";
+
+@theme {
+  /* ======================================
+     FONT
+     ====================================== */
+
+  --font-inter: "Inter", sans-serif;
+
+  /* Onboarding highlighted/italic font */
+  --font-inter-tight: "Inter Tight Variable", sans-serif;
+
+
+  /* =========================================================
+     PEDXO BRAND COLORS
+     ========================================================= */
+
+  /* Primary brand green */
+  --color-pedxo-green: #1ca045;
+
+  /* Bright/accent green */
+  --color-pedxo-green-bright: #3bca60;
+
+  /* Dark green */
+  --color-pedxo-green-dark: #005f21;
+
+  /* Very dark brand green */
+  --color-pedxo-green-deep: #003311;
+
+  /* Aqua / turquoise accent */
+  --color-pedxo-aqua: #3bca60;
+
+  /* Very dark / near-black */
+  --color-pedxo-black: #080c09;
+
+  /* White */
+  --color-pedxo-white: #ffffff;
+
+
+  /* =========================================================
+     NEUTRAL COLORS
+     ========================================================= */
+
+  /* Main muted gray */
+  --color-pedxo-gray: #6e736e;
+
+  /* Border / divider gray */
+  --color-pedxo-border: #e2e6e2;
+
+
+  /* =========================================================
+     LIGHT BACKGROUND COLORS
+     ========================================================= */
+
+  /* Soft brand green background */
+  --color-pedxo-soft-green: #def1e0;
+}
+
+
+:root {
+  font-family: "Inter", sans-serif;
+
+  color: #080c09;
+  background: #ffffff;
+
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+
+* {
+  box-sizing: border-box;
+}
+
+
+html {
+  scroll-behavior: smooth;
+}
+
+
+body {
+  min-width: 320px;
+  margin: 0;
+  background: #ffffff;
+}
+
+
+button,
+input,
+textarea,
+select {
+  font: inherit;
+}
+
+
+button {
+  cursor: pointer;
+}
+
+
+img,
+svg {
+  display: block;
+}
+
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+
+/* =========================================================
+   ONBOARDING
+   ---------------------------------------------------------
+   These rules are isolated to onboarding-related elements.
+   They do not modify the existing global design above.
+   ========================================================= */
+
+.onboarding-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+}
+
+
+/* Prevent onboarding images from becoming selectable */
+.onboarding-image,
+.onboarding-logo {
+  user-select: none;
+  -webkit-user-drag: none;
+}
+
+
+/* Smooth onboarding transitions */
+.onboarding-transition {
+  transition:
+    opacity 200ms ease,
+    transform 200ms ease;
+}
+
+
+/* Desktop onboarding viewport */
+@media (min-width: 1024px) {
+  .onboarding-desktop-height {
+    min-height: 100vh;
+    height: 100vh;
+  }
+}
+
+
+/* Mobile onboarding viewport */
+@media (max-width: 1023px) {
+  .onboarding-mobile-height {
+    min-height: 100vh;
+  }
+}
