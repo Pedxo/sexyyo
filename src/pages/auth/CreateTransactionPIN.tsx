@@ -9,7 +9,6 @@ import {
     ArrowRight,
     Check,
     Delete,
-    ShieldCheck,
   } from 'lucide-react'
   
   import {

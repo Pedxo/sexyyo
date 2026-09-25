@@ -12,7 +12,7 @@ import {
   } from 'lucide-react'
   
   import {
-    useLocation,
+    //useLocation,
     useNavigate,
   } from 'react-router'
   
@@ -40,10 +40,10 @@ import {
   
   function ConfirmPIN() {
     const navigate = useNavigate()
-    const location = useLocation()
+    //const location = useLocation()
   
-    const state =
-      location.state as LocationState | null
+    // const state =
+    //   location.state as LocationState | null
   
     /*
     ===========================================================

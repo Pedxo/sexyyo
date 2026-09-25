@@ -36,14 +36,6 @@ const router = createBrowserRouter([
     path: '/onboarding/step-3',
     Component: StepThree,
   },
-  // {
-  //   path: '/get-started',
-  //   Component: GetStartedPage,
-  // },
-  // {
-  //   path: '/create-account',
-  //   Component: CreateAccountPage,
-  // },
   {
     path: '/get-started',
     element: (

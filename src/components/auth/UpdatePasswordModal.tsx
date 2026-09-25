@@ -1,4 +1,4 @@
-import { ArrowRight, Check } from 'lucide-react'
+import { ArrowRight} from 'lucide-react'
 
 import Button from '../ui/Button'
 import sendEmail from '../../assets/icons/sendEmail.svg'

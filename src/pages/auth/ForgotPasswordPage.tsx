@@ -43,10 +43,8 @@ function ForgotPasswordPage({
     =========================================================
   */
 
-  const handleSubmit = async (
-    event: React.FormEvent<HTMLFormElement>,
-  ) => {
-    event.preventDefault()
+  const handleSubmit = async () => {
+    // event.preventDefault()
   
     setError('')
   
@@ -404,7 +402,7 @@ function ForgotPasswordPage({
 
                   <Button
                     type="button"
-                    onClick={handleSubmit}
+                    onClick={() => handleSubmit()}
                     loading={loading}
                     loadingText="Sending instructions..."
                     className="
@@ -591,7 +589,7 @@ function ForgotPasswordPage({
 
               <Button
                 type="button"
-                onClick={handleSubmit}
+                onClick={() => handleSubmit()}
                 loading={loading}
                 loadingText="Sending instructions..."
                 className="
