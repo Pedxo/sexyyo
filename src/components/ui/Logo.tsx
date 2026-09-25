@@ -1,4 +1,5 @@
-import logoIcon from '../../assets/icons/logo.svg'
+import logoIcon from '../../assets/icons/logo.svg'//main logo green
+import onboardingLogo from "../../assets/icons/logo_onboard1.png"; //use on the onboardingImage
 
 interface LogoProps {
   light?: boolean
@@ -31,12 +32,12 @@ function Logo({
       `}
     >
       <img
-        src={logoIcon}
+        src={onboarding ? onboardingLogo : logoIcon}
         alt="Pedxo Pay"
         className={`
           shrink-0
           ${iconSizes[size]}
-          ${onboarding ? 'onboarding-logo' : ''}
+          ${onboarding ? 'onboarding-logo object-contain' : ''}
         `}
       />
 

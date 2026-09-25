@@ -21,6 +21,7 @@ import {
   import ValidationMessage from '../../components/auth/ValidationMessage'
   
   import stampBadge from '../../assets/icons/stamp_2.svg'
+  import { useAuthStore } from '../../store/auth.store'
   
   
   interface LocationState {
@@ -45,13 +46,27 @@ import {
       location.state as LocationState | null
   
     /*
-      PIN created on the previous page.
+    ===========================================================
+    AUTH STORE
+    ===========================================================
+
+    The PIN created on CreateTransactionPIN is now stored
+    inside auth.store.ts as pendingTransactionPin.
+
+    confirmTransactionPin() is responsible for checking
+    whether the PIN entered on this page matches it.
+  */
+
+  const pendingTransactionPin = useAuthStore(
+    (state) => state.pendingTransactionPin,
+  )
+
+  const confirmTransactionPin = useAuthStore(
+    (state) => state.confirmTransactionPin,
+  )
+
   
-      In production this should eventually be handled by
-      your backend/session rather than trusting navigation state.
-    */
-  
-    const originalPin = state?.pin || []
+    //const originalPin = state?.pin || []
     const [pin, setPin] = useState<string[]>(Array(PIN_LENGTH).fill(''),)
     const [activeIndex, setActiveIndex] = useState(0)
     const [error, setError] = useState('')
@@ -304,78 +319,126 @@ import {
       ===========================================================
     */
   
-    const handleConfirm = () => {
-      setError('')
-  
-      if (!isComplete) {
-        return
-      }
-  
-      const enteredPin =
-        pin.join('')
-  
-      const createdPin =
-        originalPin.join('')
-  
-      /*
-        Make sure the user actually came from the
-        CreateTransactionPIN page.
-      */
-  
-      if (
-        !createdPin ||
-        createdPin.length !== PIN_LENGTH
-      ) {
-        setError(
-          'Your PIN session has expired. Please start over.',
-        )
-  
-        return
-      }
-  
-      /*
-        Compare both PINs.
-      */
-  
-      if (enteredPin !== createdPin) {
-        setError(
-          'PINs do not match. Please try again.',
-        )
-  
-        setPin(
-          Array(PIN_LENGTH).fill(''),
-        )
-  
-        setActiveIndex(0)
-  
-        inputRefs.current[0]?.focus()
-  
-        return
-      }
-  
-      /*
-        =======================================================
-        SUCCESS
-        =======================================================
-  
-        IMPORTANT:
-  
-        We DO NOT render CreatePINSuccessModal here.
-  
-        We return to CreateTransactionPIN and tell that page
-        to open the success modal.
-      */
-  
-      navigate(
-        '/create-transaction-pin',
-        {
-          replace: true,
-          state: {
-            pinCreated: true,
+      const handleConfirm = () => {
+        setError('')
+    
+        /*
+          =========================================================
+          PIN MUST BE COMPLETE
+          =========================================================
+        */
+    
+        if (!isComplete) {
+          return
+        }
+    
+        /*
+          =========================================================
+          ENTERED PIN
+          =========================================================
+        */
+    
+        const enteredPin =
+          pin.join('')
+    
+        /*
+          =========================================================
+          CHECK AUTH STORE SESSION
+          =========================================================
+    
+          The previous version checked:
+    
+            location.state.pin
+    
+          That is no longer necessary.
+    
+          CreateTransactionPIN stores the PIN in:
+    
+            auth.store.ts
+            pendingTransactionPin
+        */
+    
+        if (
+          !pendingTransactionPin ||
+          pendingTransactionPin.length !== PIN_LENGTH
+        ) {
+          setError(
+            'Your PIN session has expired. Please start over.',
+          )
+    
+          return
+        }
+    
+        /*
+          =========================================================
+          VERIFY WITH AUTH STORE
+          =========================================================
+    
+          The store compares:
+    
+            enteredPin
+    
+          against:
+    
+            pendingTransactionPin
+    
+          If correct, the store automatically:
+    
+            transactionPin = enteredPin
+            pendingTransactionPin = ''
+        */
+    
+        const confirmed =
+          confirmTransactionPin(enteredPin)
+    
+        /*
+          =========================================================
+          PIN DOES NOT MATCH
+          =========================================================
+        */
+    
+        if (!confirmed) {
+          setError(
+            'PINs do not match. Please try again.',
+          )
+    
+          setPin(
+            Array(PIN_LENGTH).fill(''),
+          )
+    
+          setActiveIndex(0)
+    
+          inputRefs.current[0]?.focus()
+    
+          return
+        }
+    
+        /*
+          =========================================================
+          SUCCESS
+          =========================================================
+    
+          IMPORTANT:
+    
+          We DO NOT render CreatePINSuccessModal here.
+    
+          We return to CreateTransactionPIN and tell that page
+          to open its existing success modal.
+    
+          This keeps your existing flow unchanged.
+        */
+    
+        navigate(
+          '/create-transaction-pin',
+          {
+            replace: true,
+            state: {
+              pinCreated: true,
+            },
           },
-        },
-      )
-    }
+        )
+      }
+    
   
   
     return (

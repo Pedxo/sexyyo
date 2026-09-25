@@ -1,10 +1,14 @@
 import { createBrowserRouter } from 'react-router'
 import ConfirmPIN from '../pages/auth/ConfirmPIN'
 import CreateAccountPage from '../pages/auth/CreateAccountPage'
+import CreatePassCode from '../pages/auth/CreatePassCode'
 import CreateTransactionPIN from '../pages/auth/CreateTransactionPIN'
+import ForgotPasswordPage from '../pages/auth/ForgotPasswordPage'
 import GetStartedPage from '../pages/auth/GetStartedPage'
 import OTPVerifyEmailPage from '../pages/auth/OTPVerifyEmailPage'
+import ResetNewPassword from '../pages/auth/ResetNewPassword'
 import SignInPage from '../pages/auth/SignInPage'
+import DashboardPage from '../pages/dashboard/DashboardPage'
 //import CreateAccountPage from '../pages/auth/CreateAccountPage'
 //import GetStartedPage from '../pages/GetStartedPage'
 
@@ -87,28 +91,26 @@ const router = createBrowserRouter([
     path: '/sign-in',
     Component: SignInPage,
   },
-  //
-  //
-  // {
-  //   path: '/forgot-password',
-  //   Component: ForgotPasswordPage,
-  // },
-  //
-  // {
-  //   path: '/otp-verification',
-  //   Component: OTPVerificationPage,
-  // },
-  //
-  // {
-  //   path: '/reset-password',
-  //   Component: ResetPasswordPage,
-  // },
+  {
+    path: '/create-pass-code',
+    Component: CreatePassCode,
+  },
+  
+  {
+    path: '/forgot-password',
+    Component: ForgotPasswordPage,
+  },
+  
+  {
+    path: '/reset-new-password',
+    Component: ResetNewPassword,
+  },
 
   // Future authenticated dashboard
-  // {
-  //   path: '/dashboard',
-  //   Component: DashboardPage,
-  // },
+  {
+    path: '/dashboard',
+    Component: DashboardPage,
+  },
 ])
 
 export default router

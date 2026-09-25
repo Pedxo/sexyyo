@@ -2,21 +2,25 @@ import {
     ArrowRight,
   } from 'lucide-react'
   
-  import Button from '../ui/Button'
+  import Button from '../ui/Button';
+  import {useNavigate} from 'react-router'
   
-  import errorIcon from '../../assets/icons/email_expired.svg';
+  import errorIcon from '../../assets/icons/email_expired.svg'
   
-  interface ExpiredEmailProps {
+  interface ExpiredResetPasswordModalProps {
     onNewLink: () => void
-    onDifferentEmail?: () => void
     loading?: boolean
   }
   
-  function ExpiredEmail({
+  function ExpiredResetPasswordModal({
     onNewLink,
-    onDifferentEmail,
     loading = false,
-  }: ExpiredEmailProps) {
+  }: ExpiredResetPasswordModalProps) {
+      const navigate = useNavigate();
+
+    const handleSignLink = () => {
+        navigate("/sign-in");
+    }
     return (
       <div
         className="
@@ -30,46 +34,49 @@ import {
           sm:px-8
           lg:pr-[6vw]
         "
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="expired-reset-password-title"
       >
         <div
           className="
             flex
             md:h-[280px]
-            h-[60%] 
-            w-[448px]  
-            bg-white 
-            shadow-[0px_8px_24px_-8px_rgba(8,12,9,0.12)]
+            h-[58%]
+            w-[448px]
             max-w-full
-            md:mt-14
-            sm:mr-30
-            mt-30
-            md:mr-10
             flex-col
             rounded-[28px]
             border
             border-pedxo-border
-            border-t
-            border-t-pedxo-border
+            bg-white
+            shadow-[0px_8px_24px_-8px_rgba(8,12,9,0.12)]
+            md:mr-10
+            sm:mr-30
+            md:mt-28
+            mt-36
           "
         >
           <div
             className="
               pointer-events-auto
-              w-full
               flex
+              h-full
+              w-full
+              max-w-[448px]
               flex-col
               items-center
-              max-w-[448px]
               rounded-[28px]
               border
               border-[#E2E6E2]
               bg-white
               p-8
               shadow-[0px_8px_24px_-8px_#080C091F]
-              lg:h-[280px]
             "
           >
-            {/* Icon */}
+            {/* =================================================
+                ICON
+                ================================================= */}
   
             <div
               className="
@@ -84,49 +91,56 @@ import {
                 src={errorIcon}
                 alt=""
                 className="
-                  md:h-11
-                  md:w-11
                   h-10
                   w-10
+                  md:h-11
+                  md:w-11
                 "
               />
             </div>
   
-            {/* Title */}
+            {/* =================================================
+                TITLE
+                ================================================= */}
   
             <h3
+              id="expired-reset-password-title"
               className="
-                md:mt-4
                 mt-6
-                md:text-[20px]
                 text-[18px]
                 font-semibold
                 leading-tight
                 tracking-[-0.03em]
                 text-[#080C09]
+                md:mt-4
+                md:text-[20px]
               "
             >
-              This link has expired
+              This reset link has expired
             </h3>
   
-            {/* Description */}
+            {/* =================================================
+                DESCRIPTION
+                ================================================= */}
   
             <p
               className="
-                md:mt-2
                 mt-4
-                text-[13px]
                 text-center
+                md:text-[13px]
+                text-[12px]
                 leading-5
                 text-[#6E736E]
+                md:mt-2
               "
             >
-              Verification links are valid for 30 minutes.
-              Request a fresh one and we'll email it right
-              away.
+              For your security, reset links and codes last 30 minutes.
+              Request a new one to continue.
             </p>
   
-            {/* New link */}
+            {/* =================================================
+                REQUEST NEW LINK
+                ================================================= */}
   
             <Button
               type="button"
@@ -135,50 +149,39 @@ import {
               loading={loading}
               loadingText="Sending..."
               className="
-                md:mt-3
                 mt-6
-                md:h-[44px]
                 h-[38px]
-                w-[188.56px]
-                md:text-[13px]
-                text-[11px]
+                w-[226px]
+                text-[10px]
                 font-semibold
+                md:mt-3
+                md:h-[44px]
+                md:text-[12px]
               "
             >
-              Send a new link
+              Request a new link
   
               <ArrowRight
                 size={16}
                 strokeWidth={1.8}
               />
             </Button>
-  
-            {/* Different email */}
-  
-            <button
-              type="button"
-              onClick={onDifferentEmail}
-              className="
-                md:mt-2
-                mt-6
-                block
-                w-full
-                text-center
-                md:text-[11px]
-                text[8px]
-                font-normal
-                text-[#6E736E]
-                transition-colors
-                hover:text-[#005F21]
-                mb-10
-              "
-            >
-              Use a different email
-            </button>
+
+            <span 
+            onClick={handleSignLink}
+            className="
+            text-[#6E736E] 
+            md:text-[14px] 
+            mt-2
+            text-[12px]
+            cursor-pointer
+            ">
+              Back to sign in
+            </span>
           </div>
         </div>
       </div>
     )
   }
   
-  export default ExpiredEmail
+  export default ExpiredResetPasswordModal

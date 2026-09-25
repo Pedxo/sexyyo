@@ -25,40 +25,28 @@ import {
   import verifyEmailIcon from '../../assets/icons/verifyEmail_icon.svg'
   import stampBadge from '../../assets/icons/stamp_2.svg'
   import resendIcon from '../../assets/icons/resend_icon.svg'
+  import { useAuthStore } from '../../store/auth.store'
   
   interface LocationState {
     email?: string
     expired?: boolean
   }
   
-  /*
-    =============================================================
-    TEMPORARY DEVELOPMENT OTP
-    =============================================================
-  
-    Replace this with your backend OTP verification request
-    when the API is connected.
-  */
-  const DEMO_OTP = '123456'
-  
-  /*
-    =============================================================
-    DEVELOPMENT UI TESTING
-    =============================================================
-  */
-  const SHOW_EXPIRED_MODAL_ON_WRONG_OTP = true
   
   function OTPVerifyEmailPage() {
     const navigate = useNavigate()
     const location = useLocation()
+
+    const verifyEmailOtp = useAuthStore(
+      (state) => state.verifyEmailOtp,
+    )
+    
+    const resendEmailOtp = useAuthStore(
+      (state) => state.resendEmailOtp,
+    )
   
-    const state =
-      location.state as LocationState | null
-  
-    const email =
-      state?.email ||
-      'you@company.com'
-  
+    const state = location.state as LocationState | null
+    const email = state?.email || 'you@company.com'
     const [otp, setOtp] = useState([
       '',
       '',
@@ -84,7 +72,6 @@ import {
     At 0 the "Resend email" button becomes clickable.
     */
     const [resendSeconds, setResendSeconds] = useState(34)
-
     const inputRefs = useRef<Array<HTMLInputElement | null>>([])
 
     /*
@@ -170,9 +157,7 @@ useEffect(() => {
         Handle pasted/multiple digits.
       */
   
-      const digits =
-        numericValue.slice(0, 6)
-  
+      const digits = numericValue.slice(0, 6)
       const updated = [...otp]
   
       digits
@@ -315,82 +300,94 @@ useEffect(() => {
       ==================================
     */
   
-    const handleVerify = async () => {
-      setError('')
-  
-      const enteredOtp =
-        otp.join('')
-  
-      if (enteredOtp.length !== 6) {
-        return
-      }
-  
-      /*
-        Make sure the other modal is closed before
-        starting a new verification attempt.
-      */
-  
-      setShowExpiredModal(false)
-      setShowVerifiedModal(false)
-  
-      setLoading(true)
-  
-      /*
-        Temporary delay to show the spinner.
-      */
-  
-      await new Promise((resolve) =>
-        setTimeout(resolve, 1200),
-      )
-  
-      /*
-        ================================
-        TEMPORARY FRONTEND OTP CHECK
-        ===============================
-  
-        Replace this section with:
-  
-        POST /verify-email-otp
-  
-        when your backend is ready.
-      */
-  
-      if (enteredOtp !== DEMO_OTP) {
-        setLoading(false)
-  
-        /*
-          =====================================================
-          DEVELOPMENT TESTING
-          =====================================================
-        */
-  
-        if (
-          SHOW_EXPIRED_MODAL_ON_WRONG_OTP
-        ) {
-          setShowExpiredModal(true)
-  
-          return
-        }
-  
-        /*
-          Normal production behavior for an incorrect OTP.
-        */
-  
-        setError(
-          'The verification code is incorrect. Please try again.',
-        )
-  
-        return
-      }
-  
-      /*
-        Correct OTP.
-      */
-  
-      setLoading(false)
-  
-      setShowVerifiedModal(true)
-    }
+/*
+  ==================================
+  VERIFY OTP
+  ==================================
+*/
+
+const handleVerify = async () => {
+  setError('')
+
+  const enteredOtp = otp.join('')
+
+  /*
+    =======================================================
+    OTP LENGTH VALIDATION
+    =======================================================
+  */
+
+  if (enteredOtp.length !== 6) {
+    return
+  }
+
+  /*
+    Make sure the other modal is closed before
+    starting a new verification attempt.
+  */
+
+  setShowExpiredModal(false)
+  setShowVerifiedModal(false)
+
+  setLoading(true)
+
+  /*
+    Temporary delay to show the spinner.
+
+    Keep this because it is part of the existing
+    frontend UI behavior.
+  */
+
+  await new Promise((resolve) =>
+    setTimeout(resolve, 1200),
+  )
+
+  /*
+    =======================================================
+    VERIFY THROUGH ZUSTAND
+    =======================================================
+
+    auth.store.ts is now responsible for checking
+    whether the OTP is correct.
+
+    The page does NOT know the actual OTP.
+  */
+
+  const verified = verifyEmailOtp(enteredOtp)
+
+  setLoading(false)
+
+  /*
+    =======================================================
+    INVALID / EXPIRED OTP
+    =======================================================
+  */
+
+  if (!verified) {
+    setShowExpiredModal(true)
+
+    return
+  }
+
+  /*
+    =======================================================
+    CORRECT OTP
+    =======================================================
+
+    The store has already changed:
+
+      emailVerified: true
+
+    and:
+
+      user.emailVerified: true
+
+    The existing EmailVerified modal remains
+    responsible for the next step.
+  */
+
+  setShowVerifiedModal(true)
+}
   
     /*
       =========================================================
@@ -422,56 +419,98 @@ useEffect(() => {
 
  
 //RESEND OTP
+
 const handleResendOtp = async () => {
-    /*
-      Prevent accidental clicks while the countdown is active.
-    */
-    if (resendSeconds > 0) {
-      return
-    }
-  
-    /*
-      Reset the countdown immediately.
-  
-      The UI will now display:
-  
-      Resend in 34s
-    */
-    setResendSeconds(34)
-  
-    /*
-      Clear the previous OTP.
-    */
-    setOtp([
-      '',
-      '',
-      '',
-      '',
-      '',
-      '',
-    ])
-  
-    /*
-      Clear any previous validation message.
-    */
-    setError('')
-  
-    /*
-      Start from the first OTP input again.
-    */
-    setActiveIndex(0)
-  
-    /*
-      Focus the first input.
-    */
-    inputRefs.current[0]?.focus()
-  
-    /*
-      =============================
-      BACKEND RESEND OTP
-      =============================
-    */
+  /*
+    Prevent accidental clicks while the countdown is active.
+  */
+
+  if (resendSeconds > 0) {
+    return
   }
+
+  /*
+    =======================================================
+    RESEND OTP THROUGH ZUSTAND
+    =======================================================
+
+    auth.store.ts will generate/reset the mock OTP.
+
+    For the current mock store, the OTP is:
+
+      123456
+
+    The page does not need to know that.
+  */
+
+  resendEmailOtp()
+
+  /*
+    =======================================================
+    RESET COUNTDOWN
+    =======================================================
+
+    The UI will now display:
+
+      Resend in 34s
+  */
+
+  setResendSeconds(34)
+
+  /*
+    =======================================================
+    CLEAR PREVIOUS OTP
+    =======================================================
+  */
+
+  setOtp([
+    '',
+    '',
+    '',
+    '',
+    '',
+    '',
+  ])
+
+  /*
+    =======================================================
+    CLEAR VALIDATION
+    =======================================================
+  */
+
+  setError('')
+
+  /*
+    =======================================================
+    CLOSE EXPIRED MODAL
+    =======================================================
+  */
+
+  setShowExpiredModal(false)
+
+  /*
+    =======================================================
+    START FROM FIRST INPUT
+    =======================================================
+  */
+
+  setActiveIndex(0)
+
+  /*
+    =======================================================
+    FOCUS FIRST INPUT
+    =======================================================
+  */
+
+  inputRefs.current[0]?.focus()
+
+  /*
+    =======================================================
+    FUTURE BACKEND
+    =======================================================
+
+  */
+}
   
     /*
       ==================================
@@ -497,7 +536,7 @@ const handleResendOtp = async () => {
         route is ready.
       */
   
-      navigate('/create-pin')
+      navigate('/create-transaction-pin')
     }
   
     /*

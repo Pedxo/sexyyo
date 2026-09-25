@@ -20,8 +20,9 @@ import {
   import Logo from '../../components/ui/Logo'
   import Button from '../../components/ui/Button'
   import CreatePINSuccessModal from './CreatePINSuccessModal'
-  
+  import { useAuthStore } from '../../store/auth.store'
   import stampBadge from '../../assets/icons/stamp_2.svg'
+import ValidationMessage from '../../components/auth/ValidationMessage'
   
   
   interface LocationState {
@@ -47,9 +48,9 @@ import {
   function CreateTransactionPIN() {
     const navigate = useNavigate()
     const location = useLocation()
+    const createTransactionPin = useAuthStore((state) => state.createTransactionPin,)
   
-    const state =
-      location.state as LocationState | null
+    const state = location.state as LocationState | null
   
   
     /*
@@ -59,12 +60,8 @@ import {
     */
   
     const [pin, setPin] = useState<string[]>(Array(PIN_LENGTH).fill(''),)
-  
-    const [activeIndex, setActiveIndex] =
-      useState(0)
-  
-    const [error, setError] =
-      useState('')
+    const [activeIndex, setActiveIndex] = useState(0)
+    const [error, setError] = useState('')
   
   
     /*
@@ -83,10 +80,7 @@ import {
       We then render CreatePINSuccessModal here.
     */
   
-    const [showSuccessModal, setShowSuccessModal] =
-      useState(
-        Boolean(state?.pinCreated),
-      )
+    const [showSuccessModal, setShowSuccessModal] = useState(Boolean(state?.pinCreated),)
   
   
     /*
@@ -363,37 +357,81 @@ import {
     }
   
   
-    /*
-      ===========================================================
-      CONTINUE
-      ===========================================================
-    
-      The PIN is passed to ConfirmPIN through router state.
-  
-      This is temporary frontend state until the backend is
-      connected.
-    */
-  
-    const handleContinue = () => {
-      setError('')
-  
-      if (!isComplete) {
-        setError(
-          'Please enter all 6 digits of your PIN.',
-        )
-  
-        return
-      }
-  
-      navigate(
-        '/confirm-pin',
-        {
-          state: {
-            pin,
-          },
-        },
-      )
-    }
+  /*
+  ===========================================================
+  CONTINUE
+  ===========================================================
+
+  The PIN is stored in Zustand first.
+
+  The PIN UI uses an array:
+
+    ['1', '2', '3', '4', '5', '6']
+
+  auth.store.ts expects a string:
+
+    '123456'
+
+  Therefore we convert the array with:
+
+    pin.join('')
+
+  The existing router state is also preserved so the
+  current ConfirmPIN flow is not changed.
+*/
+
+const handleContinue = () => {
+  setError('')
+
+  /*
+    =========================================================
+    VALIDATE PIN
+    =========================================================
+  */
+
+  if (!isComplete) {
+    setError(
+      'Please enter all 6 digits of your PIN.',
+    )
+
+    return
+  }
+
+  /*
+    =========================================================
+    CONVERT PIN ARRAY TO STRING
+    =========================================================
+
+    Example:
+
+      ['1', '2', '3', '4', '5', '6']
+
+    becomes:
+
+      '123456'
+  */
+
+  const transactionPin = pin.join('')
+
+  /*
+    =========================================================
+    STORE PIN IN ZUSTAND
+    =========================================================
+
+      createTransactionPin(pin: string)
+  */
+
+  createTransactionPin(transactionPin)
+
+  navigate(
+    '/confirm-pin',
+    {
+      state: {
+        pin,
+      },
+    },
+  )
+}
   
   
     /*

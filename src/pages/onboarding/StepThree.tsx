@@ -14,12 +14,17 @@ function StepThree() {
     navigate('/get-started')
   }
 
+  const handleSignIn = () => {
+    navigate('/sign-in')
+  }
+
   return (
     <OnboardingPage
       item={onboardingData[2]}
       currentStep={3}
       onContinue={handleContinue}
       onSkip={handleSkip}
+      onSignIn={handleSignIn}
     />
   )
 }

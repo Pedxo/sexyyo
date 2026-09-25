@@ -22,6 +22,7 @@ import EmailIcon from "../../assets/icons/email.svg";
 import stampBadge from "../../assets/icons/stamp_2.svg"
 import VerifyEmail from '../../components/auth/VerifyEmail';
 import verifyEmailIcon from "../../assets/icons/sendEmail.svg";
+import { useAuthStore } from '../../store/auth.store'
 
 interface CreateAccountPageProps {
   onBack?: () => void
@@ -33,6 +34,9 @@ function CreateAccountPage({
   onSignIn,
 }: CreateAccountPageProps) {
   const navigate = useNavigate();
+  const createAccount = useAuthStore(
+    (state) => state.createAccount,
+  )
   
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
@@ -51,42 +55,50 @@ function CreateAccountPage({
 
     const handleSubmit = () => {
       setError('')
-  
+    
       if (!email.trim()) {
         setError(
           'Enter your email to continue.',
         )
         return
       }
-  
+    
       if (!password.trim()) {
         setError(
           'Enter your password to continue.',
         )
         return
       }
-  
+    
       if (password.length < 8) {
         setError(
           'Your password must be at least 8 characters.',
         )
         return
       }
-  
+    
       if (!acceptedTerms) {
         setError(
           'Please accept the Terms & Privacy Policy to continue.',
         )
         return
       }
-  
+    
       /*
-        Validation passed.
-  
-        Instead of displaying the old loading state here,
-        open the Verify Email modal.
+        ---------------------------------------------------------
+        VALIDATION PASSED
+        ---------------------------------------------------------
+    
+        Store the account in Zustand.
+    
+        The UI still opens the same VerifyEmail modal.
       */
-  
+    
+      createAccount(
+        email.trim(),
+        password,
+      )
+    
       setShowVerifyModal(true)
     }
   
@@ -98,12 +110,6 @@ function CreateAccountPage({
   
     const handleVerifyEmail = async () => {
       setLoading(true)
-  
-      /*
-        Backend/API registration will eventually happen here.
-  
-        The delay currently allows the spinner to be visible.
-      */
   
       await new Promise((resolve) =>
         setTimeout(resolve, 1000),

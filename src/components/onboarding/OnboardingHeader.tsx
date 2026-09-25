@@ -4,12 +4,14 @@ interface OnboardingHeaderProps {
   currentStep: number
   totalSteps: number
   onSkip: () => void
+  onSignIn: () => void
 }
 
 function OnboardingHeader({
   currentStep,
   totalSteps,
   onSkip,
+  onSignIn,
 }: OnboardingHeaderProps) {
   return (
     <>
@@ -57,7 +59,7 @@ function OnboardingHeader({
 
         <button
           type="button"
-          onClick={onSkip}
+          onClick={onSignIn}
           className="
             text-[12px]
             font-normal

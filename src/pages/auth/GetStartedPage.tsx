@@ -53,6 +53,10 @@ import {
     const handleBack = () => {
       navigate('/onboarding/step-3')
     }
+
+    const handleSignIn = () => {
+      navigate('/sign-in')
+    }
   
   
     return (
@@ -251,7 +255,7 @@ import {
                 <Button
                   type="button"
                   variant="secondary"
-                  onClick={onLogin}
+                  onClick={handleSignIn}
                   className="
                     h-[54px]
                     w-full
@@ -311,7 +315,7 @@ import {
   
                 <button
                   type="button"
-                  onClick={onLogin}
+                  onClick={handleSignIn}
                   className="
                     text-pedxo-green
                     transition-colors
@@ -545,7 +549,7 @@ import {
   
               <button
                 type="button"
-                onClick={onLogin}
+                onClick={handleSignIn}
                 className="
                   text-white
                   hover:underline

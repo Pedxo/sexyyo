@@ -23,6 +23,7 @@ import googleIcon from '../../assets/icons/Google_icon.svg'
 import githubIcon from '../../assets/icons/GitIcon_darkBG.svg';
 import ValidationMessage from '../../components/auth/ValidationMessage';
 import stampBadge from "../../assets/icons/stamp_2.svg";
+import { useAuthStore } from '../../store/auth.store'
 
 /*
   =============================================================
@@ -62,19 +63,15 @@ function SignInPage() {
   const [submitted, setSubmitted] = useState(false)
   const [wrongPassword, setWrongPassword] = useState(false)
 
-  /*
-    =========================================================
-    ATTEMPT STATE
-    =========================================================
-
-    The temporary frontend locks after 3 failed attempts.
-
-    Replace this with the backend's failed-attempt response
-    when authentication is connected.
-  */
-
-  const [failedAttempts, setFailedAttempts] = useState(0)
+  // store
+  const lockedUntil = useAuthStore((state) => state.lockedUntil,)
+  const signIn = useAuthStore((state) => state.signIn,)
+  const unlockAccount = useAuthStore((state) => state.unlockAccount,)
+  const failedAttempts = useAuthStore((state) => state.failedAttempts,)
+  
+  
   const [showLockModal, setShowLockModal] = useState(false)
+  
 
   /*
     =========================================================
@@ -91,8 +88,11 @@ function SignInPage() {
   */
 
   const emailIsInvalid = submitted && !email.trim()
-
   const passwordIsInvalid = submitted && !password
+  const attemptsLeft = Math.max(
+    0,
+    3 - failedAttempts,
+  )
 
   /*
     =========================================================
@@ -100,75 +100,133 @@ function SignInPage() {
     =========================================================
   */
 
-  const handleSubmit = async (
-    event: React.FormEvent<HTMLFormElement>,
-  ) => {
-    event.preventDefault()
-
-    setSubmitted(true)
-    setWrongPassword(false)
-
-    /*
-      =======================================================
-      EMPTY EMAIL
-      =======================================================
-    */
-
-    if (!email.trim()) {
-      return
-    }
-
-    /*
-      =======================================================
-      EMPTY PASSWORD
-      =======================================================
-    */
-
-    if (!password) {
-      return
-    }
-
-    /*
-      =======================================================
-      TEMPORARY FRONTEND LOGIN CHECK
-      =======================================================
-
-    */
-
-    setLoading(true)
-
-    await new Promise((resolve) =>
-      setTimeout(resolve, 900),
-    )
-
-    setLoading(false)
-
-    const nextAttempt = failedAttempts + 1
-    setFailedAttempts(nextAttempt)
-
-    /*
-      =======================================================
-      ACCOUNT LOCK
-      =======================================================
-
-      Lock after the third failed attempt.
-    */
-
-    if (nextAttempt >= 3) {
+    const handleSubmit = async (
+      event: React.FormEvent<HTMLFormElement>,
+    ) => {
+      event.preventDefault()
+    
+      setSubmitted(true)
       setWrongPassword(false)
-      setShowLockModal(true)
-
-      return
+    
+      /*
+        =======================================================
+        EMPTY EMAIL
+        =======================================================
+      */
+    
+      if (!email.trim()) {
+        return
+      }
+    
+      /*
+        =======================================================
+        EMPTY PASSWORD
+        =======================================================
+      */
+    
+      if (!password) {
+        return
+      }
+    
+      /*
+        =======================================================
+        LOADING
+        =======================================================
+      */
+    
+      setLoading(true)
+    
+      await new Promise((resolve) =>
+        setTimeout(resolve, 900),
+      )
+    
+      /*
+        =======================================================
+        SIGN IN
+        =======================================================
+      */
+    
+      const result = signIn(
+        email.trim(),
+        password,
+        keepSignedIn,
+      )
+    
+      setLoading(false)
+    
+      /*
+        =======================================================
+        ACCOUNT LOCKED
+        =======================================================
+    
+        The third wrong password causes the store to set:
+    
+          failedAttempts = 3
+          lockedUntil = future timestamp
+    
+        The store also returns:
+    
+          reason = "locked"
+      */
+    
+      if (result.reason === 'locked') {
+        setWrongPassword(false)
+        setShowLockModal(true)
+    
+        return
+      }
+    
+      /*
+        =======================================================
+        WRONG PASSWORD
+        =======================================================
+    
+        Store values:
+    
+          failedAttempts = 1
+          3 - 1 = 2 attempts left
+    
+          failedAttempts = 2
+          3 - 2 = 1 attempt left
+      */
+    
+      if (
+        result.reason ===
+        'invalid_credentials'
+      ) {
+        setWrongPassword(true)
+    
+        return
+      }
+    
+      /*
+        =======================================================
+        EMAIL NOT VERIFIED
+        =======================================================
+      */
+    
+      if (
+        result.reason ===
+        'not_verified'
+      ) {
+        setWrongPassword(true)
+    
+        return
+      }
+    
+      /*
+        =======================================================
+        SUCCESS
+        =======================================================
+      */
+    
+      if (result.success) {
+        setWrongPassword(false)
+        setSubmitted(false)
+    
+        navigate('/dashboard')
+      }
     }
-
-    /*
-      =======================================================
-      WRONG PASSWORD MESSAGE
-      =======================================================
-    */
-
-    setWrongPassword(true)
-  }
 
   /*
     =========================================================
@@ -178,12 +236,13 @@ function SignInPage() {
     Called by AccountLockModal when the 04:20 timer ends.
   */
 
-  const handleUnlock = () => {
-    setShowLockModal(false)
-    setFailedAttempts(0)
-    setWrongPassword(false)
-    setSubmitted(false)
-  }
+    const handleUnlock = () => {
+      unlockAccount()
+    
+      setShowLockModal(false)
+      setWrongPassword(false)
+      setSubmitted(false)
+    }
 
   /*
     =========================================================
@@ -225,6 +284,24 @@ function SignInPage() {
       (current) => !current,
     )
   }
+
+  useEffect(() => {
+    if (
+      lockedUntil !== null &&
+      lockedUntil > Date.now()
+    ) {
+      setShowLockModal(true)
+  
+      return
+    }
+  
+    if (
+      lockedUntil === null ||
+      lockedUntil <= Date.now()
+    ) {
+      setShowLockModal(false)
+    }
+  }, [lockedUntil])
 
   /*
     =========================================================
@@ -498,13 +575,15 @@ function SignInPage() {
                       type="email"
                       placeholder="you@company.com"
                       value={email}
-                      onChange={(value) => {
-                        setEmail(value.target.value)
-
-                        if (value()) {
+                      onChange={(event) => {
+                        const value = event.target.value
+                      
+                        setEmail(value)
+                      
+                        if (value.trim()) {
                           setSubmitted(false)
                         }
-
+                      
                         setWrongPassword(false)
                       }}
                     />
@@ -637,13 +716,15 @@ function SignInPage() {
                       ================================================= */}
 
                     {wrongPassword && (
-                      <div className="mt-4">
-                        <ValidationMessage
-                          title="Wrong password"
-                          message="The password you entered is incorrect. 3 attempts left before your account is temporarily locked."
-                        />
-                      </div>
-                    )}
+                    <div className="mt-4">
+                      <ValidationMessage
+                        title="Wrong password"
+                        message={`The password you entered is incorrect. ${attemptsLeft} attempt${
+                          attemptsLeft === 1 ? '' : 's'
+                        } left before your account is temporarily locked.`}
+                      />
+                    </div>
+                  )}
 
                   {/* =================================================
                       SIGN IN BUTTON
@@ -1018,13 +1099,15 @@ function SignInPage() {
                     type="email"
                     placeholder="you@company.com"
                     value={email}
-                    onChange={(value) => {
-                      setEmail(value.target.value)
-
-                      if (value()) {
+                    onChange={(event) => {
+                      const value = event.target.value
+                    
+                      setEmail(value)
+                    
+                      if (value.trim()) {
                         setSubmitted(false)
                       }
-
+                    
                       setWrongPassword(false)
                     }}
                   />
@@ -1157,14 +1240,16 @@ function SignInPage() {
                     WRONG PASSWORD VALIDATION
                     ================================================= */}
 
-                {wrongPassword && (
-                  <div className="mt-4">
-                    <ValidationMessage
-                      title="Wrong password"
-                      message="The password you entered is incorrect. 3 attempts left before your account is temporarily locked."
-                    />
-                  </div>
-                )}
+                  {wrongPassword && (
+                    <div className="mt-4">
+                      <ValidationMessage
+                        title="Wrong password"
+                        message={`The password you entered is incorrect. ${attemptsLeft} attempt${
+                          attemptsLeft === 1 ? '' : 's'
+                        } left before your account is temporarily locked.`}
+                      />
+                    </div>
+                  )}
 
                 {/* =================================================
                     SIGN IN

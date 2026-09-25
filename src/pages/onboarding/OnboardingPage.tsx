@@ -9,6 +9,7 @@ interface OnboardingPageProps {
   currentStep: number
   onContinue: () => void
   onSkip: () => void
+  onSignIn: () => void
 }
 
 function OnboardingPage({
@@ -16,6 +17,7 @@ function OnboardingPage({
   currentStep,
   onContinue,
   onSkip,
+  onSignIn,
 }: OnboardingPageProps) {
   return (
     <main
@@ -92,6 +94,7 @@ function OnboardingPage({
             currentStep={currentStep}
             totalSteps={3}
             onSkip={onSkip}
+            onSignIn={onSignIn}
           />
 
           {/* Desktop content */}
@@ -126,6 +129,7 @@ function OnboardingPage({
           currentStep={currentStep}
           totalSteps={3}
           onSkip={onSkip}
+          onSignIn={onSignIn}
         />
 
         {/* ===========================
