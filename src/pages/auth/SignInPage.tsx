@@ -1384,47 +1384,4 @@ function SignInPage() {
 }
 
 
-/*
-  =============================================================
-  LEFT-SIDE BENEFIT
-  =============================================================
-*/
-
-function Benefit({
-  children,
-}: {
-  children: React.ReactNode
-}) {
-  return (
-    <div className="flex items-center gap-3">
-      <span
-        className="
-          flex
-          h-5
-          w-5
-          shrink-0
-          items-center
-          justify-center
-          rounded-full
-          bg-white/20
-        "
-      >
-        <Check
-          size={12}
-          strokeWidth={2.5}
-        />
-      </span>
-
-      <span
-        className="
-          text-[14px]
-          text-white/90
-        "
-      >
-        {children}
-      </span>
-    </div>
-  )
-}
-
 export default SignInPage

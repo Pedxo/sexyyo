@@ -26,13 +26,12 @@ import {
   
   interface GetStartedPageProps {
     onCreateAccount: () => void
-    onLogin: () => void
+    //onLogin: () => void
   }
   
   
   function GetStartedPage({
     onCreateAccount,
-    onLogin,
   }: GetStartedPageProps) {
     /*
       ---------------------------------------------------------

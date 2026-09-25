@@ -13,7 +13,6 @@ import {
   }
   
   function EmailVerified({
-    email,
     onContinue,
     loading = false,
   }: EmailVerifiedProps) {

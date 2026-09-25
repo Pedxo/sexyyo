@@ -24,10 +24,6 @@ import {
   import { useAuthStore } from '../../store/auth.store'
   
   
-  interface LocationState {
-    pin?: string[]
-  }
-  
   
   /*
     =============================================================
