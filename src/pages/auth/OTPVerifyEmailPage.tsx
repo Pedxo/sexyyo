@@ -536,7 +536,8 @@ const handleResendOtp = async () => {
         route is ready.
       */
   
-      navigate('/create-transaction-pin')
+      // navigate('/create-transaction-pin')
+      navigate('/create-pass-code')
     }
   
     /*
