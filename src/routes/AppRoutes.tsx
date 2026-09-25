@@ -44,13 +44,9 @@ const router = createBrowserRouter([
           window.location.href =
             '/create-account'
         }}
-        onLogin={() => {
-          console.log('Open sign in')
-        }}
       />
     ),
   },
-
   {
     path: '/create-account',
     element: (
@@ -60,7 +56,7 @@ const router = createBrowserRouter([
             '/get-started'
         }}
         onSignIn={() => {
-          console.log('Open sign in')
+          window.location.href = '/sign-in'
         }}
       />
     ),
