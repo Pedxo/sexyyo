@@ -1,5 +1,5 @@
 import { Check, ArrowRight } from 'lucide-react'
-import { Link } from 'react-router'
+import { Link} from 'react-router';
 
 
 
@@ -7,6 +7,7 @@ import Button from '../ui/Button'
 import WalletPreview from './WalletPreview'
 
 function Hero(){
+ 
   return (
     <section
       id="wallet"
@@ -100,7 +101,7 @@ function Hero(){
           </p>
 
           <div className="mt-7 flex flex-wrap gap-3">
-            <Link to="/sign-up">
+           <Link to="/onboarding/step-1">
               <Button className="rounded-[12px] px-5 py-3">
                 Open your wallet
                 <ArrowRight size={13} />

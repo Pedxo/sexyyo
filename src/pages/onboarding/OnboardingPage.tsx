@@ -74,16 +74,14 @@ function OnboardingPage({
         <section
           className="
             flex
-            h-screen
             min-h-screen
-            min-w-0
+            w-full
             flex-1
             flex-col
             bg-white
             px-8
             pb-8
             pt-8
-            lg:h-screen
             lg:min-h-screen
             lg:px-[64px]
             xl:px-[64px]

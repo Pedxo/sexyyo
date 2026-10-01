@@ -5,7 +5,7 @@ interface LogoProps {
   light?: boolean
   showText?: boolean
   onboarding?: boolean
-  size?: 'sm' | 'md' | 'lg'
+  size?: 'sm' | 'md' | 'lg' | 'dashboard'
   className?: string
 }
 
@@ -20,6 +20,7 @@ function Logo({
     sm: 'h-5 w-5',
     md: 'h-7 w-7',
     lg: 'h-12 w-12',
+    dashboard: 'h-9 w-9',
   }
 
   return (

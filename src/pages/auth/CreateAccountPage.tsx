@@ -631,16 +631,15 @@ function CreateAccountPage({
               gap-1.5
               rounded-full
               bg-white
-              text-[12px]
+              text-[10px]
               font-medium
               shadow-sm
-              whitespace-nowrap
               px-2
             "
           >
             <img src={EmailIcon} alt="email" className="w-3 h-3"/>
 
-            <span className="text-[12px]">Sign up with your pedxo account Email</span>
+            <span className="text-[10px]">Sign up with your pedxo account Email</span>
           </button>
         </div>
 
