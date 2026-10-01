@@ -51,10 +51,6 @@ const router =
             window.location.href =
               '/create-account'
           }}
-          onLogin={() => {
-            window.location.href =
-              '/sign-in'
-          }}
         />
       ),
     },

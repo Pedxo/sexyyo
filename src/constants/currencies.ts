@@ -265,7 +265,6 @@ const preferredCurrencyCountries:
     MYR: 'MY',
     MZN: 'MZ',
     NAD: 'NA',
-    NGN: 'NG',
     NIO: 'NI',
     NOK: 'NO',
     NPR: 'NP',
