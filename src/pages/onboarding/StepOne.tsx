@@ -13,6 +13,9 @@ function StepOne() {
   const handleSkip = () => {
     navigate('/get-started')
   }
+  const handleSignIn = () => {
+    navigate('/sign-in')
+  }
 
   return (
     <OnboardingPage
@@ -20,6 +23,7 @@ function StepOne() {
       currentStep={1}
       onContinue={handleContinue}
       onSkip={handleSkip}
+      onSignIn={handleSignIn}
     />
   )
 }

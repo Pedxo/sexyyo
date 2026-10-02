@@ -1,114 +1,172 @@
 import { createBrowserRouter } from 'react-router'
+
 import ConfirmPIN from '../pages/auth/ConfirmPIN'
 import CreateAccountPage from '../pages/auth/CreateAccountPage'
+import CreatePassCode from '../pages/auth/CreatePassCode'
 import CreateTransactionPIN from '../pages/auth/CreateTransactionPIN'
+import ForgotPasswordPage from '../pages/auth/ForgotPasswordPage'
 import GetStartedPage from '../pages/auth/GetStartedPage'
 import OTPVerifyEmailPage from '../pages/auth/OTPVerifyEmailPage'
+import ResetNewPassword from '../pages/auth/ResetNewPassword'
 import SignInPage from '../pages/auth/SignInPage'
-//import CreateAccountPage from '../pages/auth/CreateAccountPage'
-//import GetStartedPage from '../pages/GetStartedPage'
 
 import LandingPage from '../pages/LandingPage'
+
 import StepOne from '../pages/onboarding/StepOne'
-import StepThree from '../pages/onboarding/StepThree'
 import StepTwo from '../pages/onboarding/StepTwo'
+import StepThree from '../pages/onboarding/StepThree'
 
-const router = createBrowserRouter([
-  {
-    path: '/',
-    Component: LandingPage,
-  },
-  {
-    path: '/onboarding/step-1',
-    Component: StepOne,
-  },
+import DashboardPage from '../pages/dashboard/DashboardPage'
+import DashboardSectionPage from '../pages/dashboard/DashboardSectionPage'
 
-  {
-    path: '/onboarding/step-2',
-    Component: StepTwo,
-  },
+import DashboardLayout from '../components/dashboard/DashboardLayout'
 
-  {
-    path: '/onboarding/step-3',
-    Component: StepThree,
-  },
-  // {
-  //   path: '/get-started',
-  //   Component: GetStartedPage,
-  // },
-  // {
-  //   path: '/create-account',
-  //   Component: CreateAccountPage,
-  // },
-  {
-    path: '/get-started',
-    element: (
-      <GetStartedPage
-        onCreateAccount={() => {
-          window.location.href =
-            '/create-account'
-        }}
-        onLogin={() => {
-          console.log('Open sign in')
-        }}
-      />
-    ),
-  },
+const router =
+  createBrowserRouter([
+    {
+      path: '/',
+      Component: LandingPage,
+    },
 
-  {
-    path: '/create-account',
-    element: (
-      <CreateAccountPage
-        onBack={() => {
-          window.location.href =
-            '/get-started'
-        }}
-        onSignIn={() => {
-          console.log('Open sign in')
-        }}
-      />
-    ),
-  },
-  {
-    path: '/otp-verify-email',
-    Component: OTPVerifyEmailPage,
-  },
-  {
-    path: '/create-transaction-pin',
-    Component: CreateTransactionPIN,
-  },
-  {
-    path: '/confirm-pin',
-    Component: ConfirmPIN,
-  },
+    {
+      path: '/onboarding/step-1',
+      Component: StepOne,
+    },
 
-  // Future authentication routes
-  {
-    path: '/sign-in',
-    Component: SignInPage,
-  },
-  //
-  //
-  // {
-  //   path: '/forgot-password',
-  //   Component: ForgotPasswordPage,
-  // },
-  //
-  // {
-  //   path: '/otp-verification',
-  //   Component: OTPVerificationPage,
-  // },
-  //
-  // {
-  //   path: '/reset-password',
-  //   Component: ResetPasswordPage,
-  // },
+    {
+      path: '/onboarding/step-2',
+      Component: StepTwo,
+    },
 
-  // Future authenticated dashboard
-  // {
-  //   path: '/dashboard',
-  //   Component: DashboardPage,
-  // },
-])
+    {
+      path: '/onboarding/step-3',
+      Component: StepThree,
+    },
+
+    {
+      path: '/get-started',
+      element: (
+        <GetStartedPage
+          onCreateAccount={() => {
+            window.location.href =
+              '/create-account'
+          }}
+        />
+      ),
+    },
+
+    {
+      path: '/create-account',
+      element: (
+        <CreateAccountPage
+          onBack={() => {
+            window.location.href =
+              '/get-started'
+          }}
+          onSignIn={() => {
+            window.location.href =
+              '/sign-in'
+          }}
+        />
+      ),
+    },
+
+    {
+      path: '/otp-verify-email',
+      Component: OTPVerifyEmailPage,
+    },
+
+    {
+      path: '/create-transaction-pin',
+      Component: CreateTransactionPIN,
+    },
+
+    {
+      path: '/confirm-pin',
+      Component: ConfirmPIN,
+    },
+
+    {
+      path: '/sign-in',
+      Component: SignInPage,
+    },
+
+    {
+      path: '/create-pass-code',
+      Component: CreatePassCode,
+    },
+
+    {
+      path: '/forgot-password',
+      Component: ForgotPasswordPage,
+    },
+
+    {
+      path: '/reset-new-password',
+      Component: ResetNewPassword,
+    },
+
+    /*
+      =========================================================
+      DASHBOARD
+      =========================================================
+    */
+
+    {
+      path: '/dashboard',
+      Component: DashboardLayout,
+
+      children: [
+        {
+          index: true,
+          Component: DashboardPage,
+        },
+
+        {
+          path: 'wallets',
+          element: (
+            <DashboardSectionPage
+              title="Wallets"
+              description="Manage your Pedxo multi-currency wallets and balances."
+              activeItem="Wallets"
+            />
+          ),
+        },
+
+        {
+          path: 'transactions',
+          element: (
+            <DashboardSectionPage
+              title="Transactions"
+              description="View deposits, transfers, payments and other money movement."
+              activeItem="Transactions"
+            />
+          ),
+        },
+
+        {
+          path: 'payouts',
+          element: (
+            <DashboardSectionPage
+              title="Payouts"
+              description="Manage withdrawals and outgoing payouts to your connected accounts."
+              activeItem="Payouts"
+            />
+          ),
+        },
+
+        {
+          path: 'settings',
+          element: (
+            <DashboardSectionPage
+              title="Settings"
+              description="Manage your Pedxo account, security and dashboard preferences."
+              activeItem="Settings"
+            />
+          ),
+        },
+      ],
+    },
+  ])
 
 export default router

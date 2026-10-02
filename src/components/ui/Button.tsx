@@ -12,6 +12,8 @@ interface ButtonProps
     | 'dark'
     | 'light'
     | 'modal'
+  
+  size?: 'sm' | 'md' | 'lg'
   className?: string
   loading?: boolean
   loadingText?: string
@@ -20,6 +22,7 @@ interface ButtonProps
 function Button({
   children,
   variant = 'primary',
+  size = 'md',
   className = '',
   loading = false,
   loadingText = 'Creating account...',
@@ -58,6 +61,12 @@ function Button({
       'bg-[linear-gradient(135deg,#1CA045_0%,#3BCA60_100%)] text-white shadow-[0_20px_60px_-20px_rgba(0,95,33,0.35)] hover:brightness-[1.03]',
   }
 
+  const sizes = {
+    sm: 'px-4 py-2 text-[12px]',
+    md: 'px-5 py-3 text-[12px]',
+    lg: 'px-6 py-3.5 text-[13px]',
+  }
+
   return (
     <button
       {...props}
@@ -76,7 +85,7 @@ function Button({
         duration-200
 
         ${variants[variant]}
-
+        ${sizes[size]}
         ${loading ? 'opacity-70' : ''}
 
         ${disabled || loading ? 'cursor-not-allowed' : ''}

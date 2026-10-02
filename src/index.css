@@ -54,6 +54,10 @@
 
   /* Soft brand green background */
   --color-pedxo-soft-green: #def1e0;
+
+   /* Dashboard */
+   --color-pedxo-dashboard-bg: #fdfefc;
+  --color-pedxo-balance-bg: #def1e080;
 }
 
 
@@ -112,12 +116,20 @@ a {
   text-decoration: none;
 }
 
+/* =========================================================
+   DASHBOARD
+   ========================================================= */
+
+   .dashboard-page {
+    min-height: 100vh;
+  
+    background: #fdfefc;
+  }
+  
+
 
 /* =========================================================
    ONBOARDING
-   ---------------------------------------------------------
-   These rules are isolated to onboarding-related elements.
-   They do not modify the existing global design above.
    ========================================================= */
 
 .onboarding-image {

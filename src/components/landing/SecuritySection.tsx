@@ -1,7 +1,6 @@
 import {
     Fingerprint,
     ShieldCheck,
-    FileText,
   } from 'lucide-react';
   import payIcon from "../../assets/icons/stamp_3.svg";
   import SvgIcon from "../ui/SvgIcon"

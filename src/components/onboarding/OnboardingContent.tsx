@@ -25,10 +25,11 @@ function OnboardingContent({
         min-h-0
         flex-1
         flex-col
+        bg-white
       "
     >
       {/* Desktop content */}
-      <div className="hidden flex-1 flex-col lg:flex">
+      <div className="hidden items-stretch bg-white flex-1 flex-col lg:flex ">
         {/* Badge */}
         <div
           className="
@@ -131,6 +132,7 @@ function OnboardingContent({
               </span>
             </div>
           ))}
+          
         </div>
 
         {/* Desktop bottom controls */}

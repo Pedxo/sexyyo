@@ -4,11 +4,35 @@ import { Eye, EyeOff } from 'lucide-react'
 interface PasswordInputProps {
   value: string
   onChange: (value: string) => void
+
+  /**
+   * Allows each page to provide its own label.
+   * Defaults to "Password" for backward compatibility.
+   */
+  label?: string
+
+  /**
+   * Allows each page to provide its own placeholder.
+   */
+  placeholder?: string
+
+  /**
+   * Controls whether the password requirement text is shown.
+   *
+   * Example:
+   * showPasswordHint={false}
+   *
+   * Useful for Sign In and Passcode fields.
+   */
+  showPasswordHint?: boolean
 }
 
 function PasswordInput({
   value,
   onChange,
+  label = 'Password',
+  placeholder = 'Create a strong password',
+  showPasswordHint = true,
 }: PasswordInputProps) {
   const [showPassword, setShowPassword] = useState(false)
 
@@ -24,7 +48,7 @@ function PasswordInput({
           text-pedxo-black
         "
       >
-        Password
+        {label}
       </label>
 
       {/* Input wrapper */}
@@ -34,16 +58,20 @@ function PasswordInput({
           value={value}
           onChange={(event) => {
             /*
-              PasswordInput exposes only the value
+              PasswordInput exposes only the string value
               to the parent component.
 
-              Therefore CreateAccountPage should use:
+              Parent components should therefore use:
 
               onChange={setPassword}
+
+              or:
+
+              onChange={(value) => setPassword(value)}
             */
             onChange(event.target.value)
           }}
-          placeholder="Create a strong password"
+          placeholder={placeholder}
           className="
             h-[50px]
             w-full
@@ -53,16 +81,16 @@ function PasswordInput({
             bg-white
             px-[17px]
             pr-12
-            md:text-[13px]
             text-[12px]
             text-pedxo-black
             outline-none
             transition-all
-            placeholder:text-[#858b86]
             placeholder:text-[12px]
+            placeholder:text-[#858b86]
             focus:border-pedxo-green
             focus:ring-2
             focus:ring-pedxo-green/10
+            md:text-[13px]
           "
         />
 
@@ -78,31 +106,42 @@ function PasswordInput({
             top-1/2
             -translate-y-1/2
             text-[#727973]
+            transition-colors
+            hover:text-pedxo-black
           "
           aria-label={
             showPassword
-              ? 'Hide password'
-              : 'Show password'
+              ? `Hide ${label.toLowerCase()}`
+              : `Show ${label.toLowerCase()}`
           }
         >
           {showPassword ? (
-            <EyeOff size={17} strokeWidth={1.7} />
+            <EyeOff
+              size={17}
+              strokeWidth={1.7}
+            />
           ) : (
-            <Eye size={17} strokeWidth={1.7} />
+            <Eye
+              size={17}
+              strokeWidth={1.7}
+            />
           )}
         </button>
       </div>
 
       {/* Password requirement */}
-      <p
-        className="
-          mt-2
-          text-[10px]
-          leading-4
-          text-pedxo-gray
-        "
-      >
-      </p>
+      {showPasswordHint && (
+        <p
+          className="
+            mt-2
+            text-[10px]
+            leading-4
+            text-pedxo-gray
+          "
+        >
+          Minimum 8 characters
+        </p>
+      )}
     </div>
   )
 }

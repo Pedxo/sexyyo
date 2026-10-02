@@ -34,10 +34,14 @@ import {
         <div
           className="
             flex
-            h-[280px] w-[448px]  bg-white 
+            md:h-[280px]
+            h-[60%] 
+            w-[448px]  
+            bg-white 
             shadow-[0px_8px_24px_-8px_rgba(8,12,9,0.12)]
             max-w-full
             md:mt-14
+            sm:mr-30
             mt-30
             md:mr-10
             flex-col

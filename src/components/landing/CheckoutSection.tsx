@@ -1,5 +1,4 @@
 import {
-    FileText,
     LockKeyhole,
   } from 'lucide-react';
   import payIcon from "../../assets/icons/stamp_3.svg"

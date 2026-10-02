@@ -1,7 +1,5 @@
 import {
-    LockKeyhole,
     ArrowRight,
-    RotateCcw,
   } from 'lucide-react'
   
   import {useEffect, useState} from 'react'
