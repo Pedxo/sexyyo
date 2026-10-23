@@ -194,6 +194,43 @@ class ApiService {
     );
   }
 
+  async transfer(payload: {
+    recipient_account_number: string;
+    amount: number;
+    currency: string;
+    narration?: string;
+    pin?: string;
+  }): Promise<any> {
+    return this.request<any>("/sexyyo/transaction/transfer", {
+      method: "POST",
+      body: JSON.stringify(payload),
+    });
+  }
+
+  async withdraw(payload: {
+    currency: string;
+    amount: number;
+    destination_type: "bank" | "crypto";
+    destination_account: string;
+    bank_name?: string;
+    crypto_network?: string;
+    narration?: string;
+    pin?: string;
+  }): Promise<any> {
+    return this.request<any>("/sexyyo/transaction/withdraw", {
+      method: "POST",
+      body: JSON.stringify(payload),
+    });
+  }
+
+  async lookupRecipient(query: string, currency: string): Promise<any> {
+    return this.request<any>(
+      `/sexyyo/transaction/lookup-recipient?query=${encodeURIComponent(
+        query
+      )}&currency=${encodeURIComponent(currency)}`
+    );
+  }
+
   async depositTopUp(payload: {
     account_number: string;
     amount: number;
