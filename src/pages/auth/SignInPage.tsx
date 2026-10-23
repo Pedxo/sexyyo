@@ -146,26 +146,44 @@ function SignInPage() {
         =======================================================
       */
     
+      let backendSuccess = false;
       try {
-        await api.login({ email: email.trim(), password });
+        const loginRes = await api.login({ email: email.trim(), password });
+        if (loginRes.token) {
+          api.setToken(loginRes.token);
+          backendSuccess = true;
+        }
       } catch (e) {
         try {
-          await api.register({
+          const regRes = await api.register({
             email: email.trim(),
             password,
             first_name: 'Clarissa',
             last_name: 'Adeleke',
             transaction_pin: '123456',
           });
+          if (regRes.token) {
+            api.setToken(regRes.token);
+            backendSuccess = true;
+          }
         } catch (_) {}
+      }
+
+      if (backendSuccess) {
+        unlockAccount();
+        setWrongPassword(false);
+        setSubmitted(false);
+        setLoading(false);
+        navigate('/dashboard');
+        return;
       }
 
       const result = signIn(
         email.trim(),
         password,
         keepSignedIn,
-      )
-    
+      );
+
       setLoading(false)
     
       /*
