@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { useSearchParams, useNavigate } from 'react-router-dom'
+import { useSearchParams, useNavigate } from 'react-router'
 import { LockKeyhole, ArrowLeft, CheckCircle2, AlertCircle, Wallet, ArrowRight } from 'lucide-react'
 import Logo from '../../components/ui/Logo'
 import DepositModal from '../../components/dashboard/modals/DepositModal'
