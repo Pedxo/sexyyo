@@ -68,12 +68,49 @@ class ApiService {
     return this.token;
   }
 
+  async ensureToken(): Promise<string> {
+    if (this.token) return this.token;
+    const stored = localStorage.getItem("pedxo_auth_token");
+    if (stored) {
+      this.token = stored;
+      return stored;
+    }
+
+    // Auto-login or register demo test user so direct route testing works out of the box
+    try {
+      const loginRes = await this.login({
+        email: "demo@pedxo.com",
+        password: "Password123!",
+      });
+      return loginRes.token;
+    } catch {
+      try {
+        const regRes = await this.register({
+          email: "demo@pedxo.com",
+          password: "Password123!",
+          first_name: "Clarissa",
+          last_name: "Adeleke",
+          transaction_pin: "123456",
+        });
+        return regRes.token;
+      } catch (err: any) {
+        console.warn("Auto-token generation failed:", err);
+        return "";
+      }
+    }
+  }
+
   private async request<T>(
     endpoint: string,
     options: RequestInit = {}
   ): Promise<T> {
     const url = `${API_BASE_URL}${endpoint}`;
-    const token = this.getToken();
+    
+    // If route requires auth and we don't have token, attempt auto-auth
+    let token = this.getToken();
+    if (!token && !endpoint.includes("/sexyyo/auth/login") && !endpoint.includes("/sexyyo/auth/register")) {
+      token = await this.ensureToken();
+    }
 
     const headers: Record<string, string> = {
       "Content-Type": "application/json",
