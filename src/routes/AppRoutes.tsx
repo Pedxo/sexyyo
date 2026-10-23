@@ -11,6 +11,7 @@ import ResetNewPassword from '../pages/auth/ResetNewPassword'
 import SignInPage from '../pages/auth/SignInPage'
 
 import LandingPage from '../pages/LandingPage'
+import CheckoutPage from '../pages/checkout/CheckoutPage'
 
 import StepOne from '../pages/onboarding/StepOne'
 import StepTwo from '../pages/onboarding/StepTwo'
@@ -26,6 +27,11 @@ const router =
     {
       path: '/',
       Component: LandingPage,
+    },
+
+    {
+      path: '/checkout',
+      Component: CheckoutPage,
     },
 
     {
