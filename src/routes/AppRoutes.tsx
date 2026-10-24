@@ -11,13 +11,17 @@ import ResetNewPassword from '../pages/auth/ResetNewPassword'
 import SignInPage from '../pages/auth/SignInPage'
 
 import LandingPage from '../pages/LandingPage'
+import CheckoutPage from '../pages/checkout/CheckoutPage'
 
 import StepOne from '../pages/onboarding/StepOne'
 import StepTwo from '../pages/onboarding/StepTwo'
 import StepThree from '../pages/onboarding/StepThree'
 
 import DashboardPage from '../pages/dashboard/DashboardPage'
-import DashboardSectionPage from '../pages/dashboard/DashboardSectionPage'
+import TransactionsPage from '../pages/dashboard/TransactionsPage'
+import WalletsPage from '../pages/dashboard/WalletsPage'
+import PayoutsPage from '../pages/dashboard/PayoutsPage'
+import SettingsPage from '../pages/dashboard/SettingsPage'
 
 import DashboardLayout from '../components/dashboard/DashboardLayout'
 
@@ -26,6 +30,11 @@ const router =
     {
       path: '/',
       Component: LandingPage,
+    },
+
+    {
+      path: '/checkout',
+      Component: CheckoutPage,
     },
 
     {
@@ -124,46 +133,22 @@ const router =
 
         {
           path: 'wallets',
-          element: (
-            <DashboardSectionPage
-              title="Wallets"
-              description="Manage your Pedxo multi-currency wallets and balances."
-              activeItem="Wallets"
-            />
-          ),
+          Component: WalletsPage,
         },
 
         {
           path: 'transactions',
-          element: (
-            <DashboardSectionPage
-              title="Transactions"
-              description="View deposits, transfers, payments and other money movement."
-              activeItem="Transactions"
-            />
-          ),
+          Component: TransactionsPage,
         },
 
         {
           path: 'payouts',
-          element: (
-            <DashboardSectionPage
-              title="Payouts"
-              description="Manage withdrawals and outgoing payouts to your connected accounts."
-              activeItem="Payouts"
-            />
-          ),
+          Component: PayoutsPage,
         },
 
         {
           path: 'settings',
-          element: (
-            <DashboardSectionPage
-              title="Settings"
-              description="Manage your Pedxo account, security and dashboard preferences."
-              activeItem="Settings"
-            />
-          ),
+          Component: SettingsPage,
         },
       ],
     },

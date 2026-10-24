@@ -23,6 +23,7 @@ import stampBadge from "../../assets/icons/stamp_2.svg"
 import VerifyEmail from '../../components/auth/VerifyEmail';
 import verifyEmailIcon from "../../assets/icons/sendEmail.svg";
 import { useAuthStore } from '../../store/auth.store'
+import { api } from '../../services/api'
 
 interface CreateAccountPageProps {
   onBack?: () => void
@@ -94,6 +95,16 @@ function CreateAccountPage({
         The UI still opens the same VerifyEmail modal.
       */
     
+      try {
+        api.register({
+          email: email.trim(),
+          password,
+          first_name: 'Clarissa',
+          last_name: 'Adeleke',
+          transaction_pin: '123456',
+        }).catch(() => {});
+      } catch (_) {}
+
       createAccount(
         email.trim(),
         password,

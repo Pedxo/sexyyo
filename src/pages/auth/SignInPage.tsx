@@ -23,6 +23,7 @@ import githubIcon from '../../assets/icons/GitIcon_darkBG.svg';
 import ValidationMessage from '../../components/auth/ValidationMessage';
 import stampBadge from "../../assets/icons/stamp_2.svg";
 import { useAuthStore } from '../../store/auth.store'
+import { api } from '../../services/api'
 
 /*
   =============================================================
@@ -145,12 +146,44 @@ function SignInPage() {
         =======================================================
       */
     
+      let backendSuccess = false;
+      try {
+        const loginRes = await api.login({ email: email.trim(), password });
+        if (loginRes.token) {
+          api.setToken(loginRes.token);
+          backendSuccess = true;
+        }
+      } catch (e) {
+        try {
+          const regRes = await api.register({
+            email: email.trim(),
+            password,
+            first_name: 'Clarissa',
+            last_name: 'Adeleke',
+            transaction_pin: '123456',
+          });
+          if (regRes.token) {
+            api.setToken(regRes.token);
+            backendSuccess = true;
+          }
+        } catch (_) {}
+      }
+
+      if (backendSuccess) {
+        unlockAccount();
+        setWrongPassword(false);
+        setSubmitted(false);
+        setLoading(false);
+        navigate('/dashboard');
+        return;
+      }
+
       const result = signIn(
         email.trim(),
         password,
         keepSignedIn,
-      )
-    
+      );
+
       setLoading(false)
     
       /*
