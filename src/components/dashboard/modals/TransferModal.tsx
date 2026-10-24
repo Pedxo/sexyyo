@@ -80,12 +80,7 @@ export default function TransferModal({ isOpen, onClose, onSuccess }: TransferMo
           isVerified: true,
         })
       } catch {
-        // Fallback demo resolution for seamless experience
-        setResolvedRecipient({
-          name: 'Clarissa Adeleke',
-          accountNumber: recipientQuery.trim(),
-          isVerified: true,
-        })
+        setResolvedRecipient(null)
       } finally {
         setResolvingRecipient(false)
       }
@@ -415,11 +410,22 @@ export default function TransferModal({ isOpen, onClose, onSuccess }: TransferMo
                 </div>
 
                 {/* Verified Recipient Pill */}
-                {resolvedRecipient && (
+                {resolvedRecipient ? (
                   <div className="mt-2 flex items-center gap-2 rounded-lg bg-[#E8F7ED] px-3 py-1.5 text-xs text-[#1CA045]">
                     <UserCheck size={14} className="shrink-0" />
                     <span className="font-semibold">{resolvedRecipient.name}</span>
                     <span className="text-[10px] text-[#1CA045]/80">· Verified Pedxo Account</span>
+                  </div>
+                ) : (
+                  <div className="mt-2 flex items-center justify-between text-[11px]">
+                    <span className="text-[#8A8F8A]">Test recipient:</span>
+                    <button
+                      type="button"
+                      onClick={() => setRecipientQuery('1000000001')}
+                      className="font-semibold text-[#1CA045] hover:underline"
+                    >
+                      Use Alex Doe (1000000001)
+                    </button>
                   </div>
                 )}
               </div>
