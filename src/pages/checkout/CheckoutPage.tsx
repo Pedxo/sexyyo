@@ -91,14 +91,22 @@ export default function CheckoutPage() {
   const [searchParams] = useSearchParams()
   const navigate = useNavigate()
 
-  // Base Order Parameters (Figma default is $1,064.25 total due: Subtotal $1,100, Discount -$110, VAT $74.25)
+  // Marketplace order: amount is already in `currency` (Hangaut, Pedxo, etc.).
   const amountParam = parseFloat(searchParams.get('amount') || '1064.25')
+  const currencyParam = (searchParams.get('currency') || 'USD').toUpperCase()
   const orderIdParam = searchParams.get('order_id') || 'PDX-ORD-58217'
   const invoiceParam = searchParams.get('invoice') || 'INV-2026-0842'
   const serviceParam = searchParams.get('service') || 'Pedxo Talent Cloud'
   const returnUrlParam = searchParams.get('return_url') || ''
+  const titleParam = searchParams.get('title') || ''
 
-  const [selectedCurrencyCode, setSelectedCurrencyCode] = useState('USD')
+  const marketplaceCurrency = CURRENCIES.some((c) => c.code === currencyParam)
+    ? currencyParam
+    : ''
+  const [selectedCurrencyCode, setSelectedCurrencyCode] = useState(
+    marketplaceCurrency || 'USD',
+  )
+  const lockCurrency = Boolean(marketplaceCurrency)
   const [activeView, setActiveView] = useState<'AUTHORIZE' | 'CURRENCY_SELECTOR' | 'RECEIPT'>('AUTHORIZE')
   
   // PIN handling (6 digits)
@@ -118,24 +126,31 @@ export default function CheckoutPage() {
 
   const selectedCurrency = CURRENCIES.find((c) => c.code === selectedCurrencyCode) || CURRENCIES[1]
 
-  // Calculate order breakdown based on selected currency
-  // Base USD: Subtotal $1,100, Discount $110, VAT $74.25, Total $1,064.25
-  const baseUsdSubtotal = 1100.0
-  const baseUsdDiscount = 110.0
-  const baseUsdVat = 74.25
-  const baseUsdTotal = amountParam || 1064.25
-
-  const fxRate = selectedCurrency.rateToUsd
-  const orderSubtotal = baseUsdSubtotal * fxRate
-  const orderDiscount = baseUsdDiscount * fxRate
-  const orderVat = baseUsdVat * fxRate
-  const orderTotalDue = baseUsdTotal * fxRate
+  // Amount from the marketplace is the total due in the selected wallet currency.
+  const orderTotalDue = Number.isFinite(amountParam) && amountParam > 0 ? amountParam : 0
+  const orderSubtotal = orderTotalDue
+  const orderDiscount = 0
+  const orderVat = 0
 
   // Live balance from backend or Figma default
   const activeAccount = wallets.find((w) => w.currency.toUpperCase() === selectedCurrencyCode.toUpperCase())
   const availableBalance = activeAccount ? activeAccount.balance : selectedCurrency.fallbackBalance
   const balanceRemaining = availableBalance - orderTotalDue
   const isInsufficient = balanceRemaining < 0
+
+  const returnWithPayment = (reference: string) => {
+    if (!returnUrlParam) return
+    try {
+      const next = new URL(returnUrlParam)
+      next.searchParams.set('paid', '1')
+      next.searchParams.set('status', 'success')
+      next.searchParams.set('order_id', orderIdParam)
+      next.searchParams.set('reference', reference)
+      window.location.assign(next.toString())
+    } catch {
+      window.location.assign(returnUrlParam)
+    }
+  }
 
   const loadWallets = async () => {
     setFetchingBalance(true)
@@ -181,15 +196,17 @@ export default function CheckoutPage() {
     setLoading(true)
 
     try {
-      // If currency is crypto (USDT/USDC), settle against USD pool in backend
+      // Crypto wallets settle against the USD pool until multi-currency crypto pools exist.
       const settlementCurrency = selectedCurrency.isCrypto ? 'USD' : selectedCurrencyCode
-      const settlementAmount = selectedCurrency.isCrypto ? baseUsdTotal : orderTotalDue
+      const settlementAmount = selectedCurrency.isCrypto
+        ? orderTotalDue / (selectedCurrency.rateToUsd || 1)
+        : orderTotalDue
 
       const res = await api.checkout({
         amount: settlementAmount,
         currency: settlementCurrency,
         order_id: orderIdParam,
-        narration: `Payment for ${serviceParam} · ${invoiceParam}`,
+        narration: `Payment for ${serviceParam}${titleParam ? ` · ${titleParam}` : ''} · ${invoiceParam}`,
         pin: fullPin || undefined,
       })
 
@@ -207,6 +224,9 @@ export default function CheckoutPage() {
       })
       setActiveView('RECEIPT')
       loadWallets()
+      if (returnUrlParam && res.reference) {
+        window.setTimeout(() => returnWithPayment(res.reference), 1200)
+      }
     } catch (err: any) {
       if (err.message && err.message.toLowerCase().includes('pin')) {
         setPinAttemptsLeft((prev) => (prev === null ? 2 : Math.max(0, prev - 1)))
@@ -360,12 +380,17 @@ export default function CheckoutPage() {
                       <span>Print receipt</span>
                     </button>
                     {returnUrlParam ? (
-                      <a
-                        href={returnUrlParam}
+                      <button
+                        type="button"
+                        onClick={() =>
+                          returnWithPayment(
+                            String(successReceipt.reference || successReceipt.payment_ref || ''),
+                          )
+                        }
                         className="flex-1 inline-flex items-center justify-center rounded-full bg-[#080C09] py-3 text-xs font-semibold text-white hover:bg-black transition"
                       >
                         Return to marketplace
-                      </a>
+                      </button>
                     ) : (
                       <button
                         onClick={() => navigate('/dashboard')}
@@ -401,7 +426,8 @@ export default function CheckoutPage() {
                       const isSelected = currency.code === selectedCurrencyCode
                       const walletAcc = wallets.find((w) => w.currency.toUpperCase() === currency.code.toUpperCase())
                       const bal = walletAcc ? walletAcc.balance : currency.fallbackBalance
-                      const convDue = baseUsdTotal * currency.rateToUsd
+                      // Same marketplace total; guest pays that amount from the chosen wallet currency.
+                      const convDue = orderTotalDue
                       const isShort = bal < convDue
                       const remaining = bal - convDue
 
@@ -715,12 +741,14 @@ export default function CheckoutPage() {
                         </p>
                       </div>
                     </div>
-                    <button
-                      onClick={() => setActiveView('CURRENCY_SELECTOR')}
-                      className="rounded-full border border-[#E2E6E2] bg-white px-3 py-1 text-xs font-semibold text-[#1CA045] hover:bg-[#E8F7ED] transition"
-                    >
-                      Change
-                    </button>
+                    {!lockCurrency && (
+                      <button
+                        onClick={() => setActiveView('CURRENCY_SELECTOR')}
+                        className="rounded-full border border-[#E2E6E2] bg-white px-3 py-1 text-xs font-semibold text-[#1CA045] hover:bg-[#E8F7ED] transition"
+                      >
+                        Change
+                      </button>
+                    )}
                   </div>
                 </div>
               </div>
